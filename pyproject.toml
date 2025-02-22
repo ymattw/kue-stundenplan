@@ -1,0 +1,5 @@
+[tool.pyink]
+line-length = 78
+target-version = ['py38']
+pyink-use-majority-quotes = true
+
