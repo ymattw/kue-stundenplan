@@ -13,6 +13,21 @@ WEEKDAYS = {
     "Friday": 4,
 }
 
+START_TIMES = [
+    "07:25",
+    "08:15",
+    "09:10",
+    "10:15",
+    "11:10",
+    "12:00",
+    "12:50",
+    "13:40",
+    "14:35",
+    "15:30",
+    "16:20",
+    "17:05",
+]
+
 
 class ICAL:
 
@@ -29,6 +44,7 @@ class ICAL:
     def add_timezone_component(self):
         self._add_component(self._create_timezone_component())
 
+    # Deprecated
     def add_event(self, weekday, timestr, title, duration_minutes=45):
         day_offset = WEEKDAYS[weekday]
         start_time = datetime.strptime(timestr, "%H:%M").time()
@@ -49,6 +65,32 @@ class ICAL:
         event.add("rrule", {"freq": "weekly", "until": self.end_date})
 
         self.cal.add_component(event)
+
+    def add_events(self, weekday, event_titles):
+        day_offset = WEEKDAYS[weekday]
+        for i in range(len(event_titles)):
+            title = event_titles[i]
+            if not title:
+                continue
+
+            event = Event()
+            event.add("summary", title)
+
+            # Calculate the actual date for the event
+            start_time = datetime.strptime(START_TIMES[i], "%H:%M").time()
+            event_start = datetime.combine(
+                self.start_date + timedelta(days=day_offset), start_time
+            )
+            event_end = event_start + timedelta(minutes=45)
+
+            # Set the time
+            event.add("dtstart", event_start, parameters={"TZID": self.tzid})
+            event.add("dtend", event_end, parameters={"TZID": self.tzid})
+
+            # Set the recurrence rule (weekly)
+            event.add("rrule", {"freq": "weekly", "until": self.end_date})
+
+            self.cal.add_component(event)
 
     def write_file(self, output_file):
         with open(output_file, "wb") as f:
