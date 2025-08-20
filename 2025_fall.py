@@ -23,7 +23,7 @@ def main():
             "M / / Ang",
             "M / / Ang",
             "",
-            "S-TH / / Wues",
+            "S / TH / Wues",
             "D / / Stra",
             "D / / Stra",
             "",
